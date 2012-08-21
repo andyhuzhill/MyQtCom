@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     PortSettings settings = {BAUD9600, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10};
     myPort = new QextSerialPort(ui->port->currentText(), settings, QextSerialPort::Polling);
-
+    // 默认使用 9600 波特率，8位数据位，无校验，1位停止位，以轮询的方式打开串口
 
     ui->port->addItems(QStringList() << "/dev/ttyS0" << "/dev/ttyS1" << "/dev/ttyS2" << "/dev/ttyS3" << "/dev/ttyUSB0");
     ui->baud->addItem("115200", BAUD115200);
@@ -31,11 +31,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verifyBit->addItem(tr("偶校验"), PAR_EVEN);
 
     ui->stopBits->addItem("1", STOP_1);
-    ui->stopBits->addItem("2", STOP_2);
+    ui->stopBits->addItem("2", STOP_2); //以上都是设置界面中的列表框的内容
+
+    ui->RxDisplay->setReadOnly(true);
 
     timer = new QTimer(this);
     timer->setInterval(10);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_out()));
+
+    setWindowTitle(tr("串口调试助手"));
 
 }
 MainWindow::~MainWindow()
@@ -51,6 +55,7 @@ void MainWindow::on_openPort_clicked()
         if (!myPort->open(QIODevice::ReadWrite))
         {
             QMessageBox::warning(this, tr("警告"), tr("打开失败！"), QMessageBox::Ok);
+            return ;
 
         }
         myPort->setPortName(ui->port->currentText());
@@ -67,7 +72,7 @@ void MainWindow::on_openPort_clicked()
 
 
 
-void MainWindow::on_port_currentIndexChanged(int index)
+void MainWindow::on_port_currentIndexChanged()
 {
     myPort->setPortName(ui->port->currentText());
 }

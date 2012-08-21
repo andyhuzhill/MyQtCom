@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui static
 
 TARGET = Mycom
 TEMPLATE = app
